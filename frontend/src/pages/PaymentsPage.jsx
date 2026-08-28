@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
+import { createPayment } from '../services/payment/payment'
 import '../styles/PaymentsPage.css'
 
-function PaymentsPage({ orders, onPay }) {
+function PaymentsPage({ authToken, orders, user, onPay }) {
   const payableOrders = useMemo(
     () => orders.filter((order) => order.status !== 'Paid'),
     [orders],
@@ -10,17 +11,32 @@ function PaymentsPage({ orders, onPay }) {
   const [selectedOrderId, setSelectedOrderId] = useState(firstOrder?.id || '')
   const selectedOrder =
     orders.find((order) => order.id === selectedOrderId) || firstOrder
+  const [error, setError] = useState('')
+  const [isPaying, setIsPaying] = useState(false)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
 
     if (!selectedOrder) return
 
-    onPay({
-      amount: selectedOrder.amount,
-      merchant: selectedOrder.merchant,
-      orderId: selectedOrder.id,
-    })
+    setError('')
+    setIsPaying(true)
+
+    try {
+      const data = await createPayment({
+        order: {
+          ...selectedOrder,
+          user_id: selectedOrder.user_id || user?.id || 'demo-user',
+        },
+        token: authToken,
+      })
+
+      onPay(data.payment)
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setIsPaying(false)
+    }
   }
 
   return (
@@ -69,8 +85,10 @@ function PaymentsPage({ orders, onPay }) {
             Idempotency Key
             <input readOnly type="text" value="demo-key-001" />
           </label>
-          <button disabled={!selectedOrder} type="submit">
-            Pay Now
+          {error && <p className="payment-error">{error}</p>}
+
+          <button disabled={!selectedOrder || isPaying} type="submit">
+            {isPaying ? 'Paying...' : 'Pay Now'}
           </button>
         </form>
 

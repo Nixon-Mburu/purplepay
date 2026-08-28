@@ -38,6 +38,34 @@ def init_db():
         )
 
 
+def wallet_to_dict(wallet):
+    if wallet is None:
+        return None
+
+    return {
+        "user_id": wallet["user_id"],
+        "balance": wallet["balance"],
+        "currency": wallet["currency"],
+        "created_at": wallet["created_at"],
+        "updated_at": wallet["updated_at"],
+    }
+
+
+def ledger_entry_to_dict(entry):
+    if entry is None:
+        return None
+
+    return {
+        "id": entry["id"],
+        "user_id": entry["user_id"],
+        "payment_id": entry["payment_id"],
+        "entry_type": entry["entry_type"],
+        "amount": entry["amount"],
+        "description": entry["description"],
+        "created_at": entry["created_at"],
+    }
+
+
 def create_wallet(user_id, opening_balance=0, currency="USD"):
     with get_connection() as connection:
         connection.execute(
@@ -47,6 +75,7 @@ def create_wallet(user_id, opening_balance=0, currency="USD"):
             """,
             (user_id, opening_balance, currency),
         )
+        connection.commit()
         return get_wallet(user_id)
 
 
@@ -77,4 +106,17 @@ def add_ledger_entry(user_id, entry_type, amount, description, payment_id=None):
             """,
             (amount, user_id),
         )
+        connection.commit()
         return get_wallet(user_id)
+
+
+def list_ledger_entries(user_id):
+    with get_connection() as connection:
+        return connection.execute(
+            """
+            SELECT * FROM ledger_entries
+            WHERE user_id = ?
+            ORDER BY created_at DESC, id DESC
+            """,
+            (user_id,),
+        ).fetchall()

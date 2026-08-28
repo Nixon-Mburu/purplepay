@@ -19,6 +19,15 @@
   width: 100%;
 }
 
+.payment-error {
+  background: #fff0f0;
+  border: 1px solid #f0b3b3;
+  border-radius: 8px;
+  color: #9f2727;
+  font-weight: 700;
+  padding: 10px 12px;
+}
+
 .payment-status {
   align-content: start;
   background: var(--purple-soft);

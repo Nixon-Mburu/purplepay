@@ -1,3 +1,4 @@
+import json
 import os
 import sqlite3
 from pathlib import Path
@@ -29,6 +30,26 @@ def init_db():
         )
 
 
+def event_to_dict(event):
+    if event is None:
+        return None
+
+    try:
+        payload = json.loads(event["payload"])
+    except json.JSONDecodeError:
+        payload = event["payload"]
+
+    return {
+        "id": event["id"],
+        "provider": event["provider"],
+        "event_type": event["event_type"],
+        "payload": payload,
+        "processed": bool(event["processed"]),
+        "received_at": event["received_at"],
+        "processed_at": event["processed_at"],
+    }
+
+
 def record_event(event_id, provider, event_type, payload):
     with get_connection() as connection:
         connection.execute(
@@ -40,6 +61,7 @@ def record_event(event_id, provider, event_type, payload):
             """,
             (event_id, provider, event_type, payload),
         )
+        connection.commit()
         return find_event(event_id)
 
 
@@ -61,4 +83,17 @@ def mark_processed(event_id):
             """,
             (event_id,),
         )
+        connection.commit()
         return find_event(event_id)
+
+
+def list_events(limit=25):
+    with get_connection() as connection:
+        return connection.execute(
+            """
+            SELECT * FROM webhook_events
+            ORDER BY received_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()

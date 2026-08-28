@@ -29,6 +29,21 @@ def init_db():
         )
 
 
+def audit_log_to_dict(log):
+    if log is None:
+        return None
+
+    return {
+        "id": log["id"],
+        "admin_user_id": log["admin_user_id"],
+        "action": log["action"],
+        "target_type": log["target_type"],
+        "target_id": log["target_id"],
+        "notes": log["notes"],
+        "created_at": log["created_at"],
+    }
+
+
 def record_admin_action(admin_user_id, action, target_type, target_id, notes=None):
     with get_connection() as connection:
         cursor = connection.execute(
@@ -40,6 +55,7 @@ def record_admin_action(admin_user_id, action, target_type, target_id, notes=Non
             """,
             (admin_user_id, action, target_type, target_id, notes),
         )
+        connection.commit()
         return cursor.lastrowid
 
 

@@ -5,8 +5,11 @@ import OrdersPage from './pages/OrdersPage'
 import PaymentsPage from './pages/PaymentsPage'
 import WalletPage from './pages/WalletPage'
 import WebhooksPage from './pages/WebhooksPage'
+import { listActivity } from './services/activity/activity'
 import { getCurrentUser, logoutUser } from './services/auth'
 import { listOrders } from './services/order/order'
+import { listPayments } from './services/payment/payment'
+import { getWallet } from './services/wallet/wallet'
 
 const pages = [
   { path: 'dashboard', label: 'Home' },
@@ -103,6 +106,37 @@ function App() {
         }
       })
       .catch(() => null)
+
+    listPayments({ userId: user.id, token: authToken })
+      .then((data) => {
+        if (data.payments.length > 0) {
+          setPayments(data.payments)
+        }
+      })
+      .catch(() => null)
+
+    getWallet({ userId: user.id, token: authToken })
+      .then((data) => {
+        setWalletBalance(data.wallet.balance)
+      })
+      .catch(() => null)
+
+    listActivity()
+      .then((data) => {
+        if (data.events.length > 0) {
+          setActivity(
+            data.events.map((event) => ({
+              title: event.event_type,
+              detail:
+                event.payload?.merchant ||
+                event.payload?.description ||
+                'Account activity was recorded.',
+              time: event.received_at,
+            })),
+          )
+        }
+      })
+      .catch(() => null)
   }, [authToken, user])
 
   const navigate = (page) => {
@@ -147,23 +181,18 @@ function App() {
     navigate('payments')
   }
 
-  const handlePay = ({ orderId, amount, merchant }) => {
-    const payment = {
-      id: `PAY-${Math.floor(Math.random() * 9000) + 1000}`,
-      orderId,
-      merchant,
-      amount,
-      status: 'Successful',
-    }
-
+  const handlePay = (payment) => {
     setPayments((items) => [payment, ...items])
     setOrders((items) =>
       items.map((order) =>
-        order.id === orderId ? { ...order, status: 'Paid' } : order,
+        order.id === payment.orderId ? { ...order, status: 'Paid' } : order,
       ),
     )
-    setWalletBalance((balance) => Number((balance - amount).toFixed(2)))
-    addActivity('Payment successful', `${merchant} received $${amount}.`)
+    setWalletBalance((balance) => Number((balance - payment.amount).toFixed(2)))
+    addActivity(
+      'Payment successful',
+      `${payment.merchant} received $${payment.amount}.`,
+    )
     navigate('wallet')
   }
 
@@ -194,7 +223,14 @@ function App() {
         onCreateOrder={handleCreateOrder}
       />
     ),
-    payments: <PaymentsPage orders={orders} onPay={handlePay} />,
+    payments: (
+      <PaymentsPage
+        authToken={authToken}
+        orders={orders}
+        user={user}
+        onPay={handlePay}
+      />
+    ),
     wallet: <WalletPage payments={payments} walletBalance={walletBalance} />,
     webhooks: <WebhooksPage activity={activity} payments={payments} />,
   }

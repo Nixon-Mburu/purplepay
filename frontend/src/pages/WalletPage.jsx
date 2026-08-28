@@ -19,11 +19,20 @@ function WalletPage({ payments, walletBalance }) {
       </div>
 
       <div className="ledger-list">
+        {payments.length === 0 && (
+          <article className="ledger-row">
+            <div>
+              <strong>No transactions yet</strong>
+              <p>Your payment history will appear here.</p>
+            </div>
+          </article>
+        )}
+
         {payments.map((payment) => (
           <article className="ledger-row" key={payment.id}>
             <div>
               <strong>{payment.merchant}</strong>
-              <p>{payment.orderId}</p>
+              <p>{payment.orderId || payment.order_id}</p>
             </div>
             <span>{payment.id}</span>
             <strong>-${payment.amount.toFixed(2)}</strong>
