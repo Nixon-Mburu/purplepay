@@ -32,6 +32,32 @@ def init_db():
         )
 
 
+def payment_to_dict(payment):
+    if payment is None:
+        return None
+
+    status_labels = {
+        "pending": "Pending",
+        "successful": "Successful",
+        "failed": "Failed",
+        "refunded": "Refunded",
+    }
+
+    return {
+        "id": payment["id"],
+        "orderId": payment["order_id"],
+        "order_id": payment["order_id"],
+        "user_id": payment["user_id"],
+        "merchant": payment["merchant"],
+        "amount": payment["amount"],
+        "currency": payment["currency"],
+        "status": status_labels.get(payment["status"], payment["status"]),
+        "idempotency_key": payment["idempotency_key"],
+        "created_at": payment["created_at"],
+        "updated_at": payment["updated_at"],
+    }
+
+
 def create_payment(
     payment_id,
     order_id,
@@ -51,6 +77,7 @@ def create_payment(
             """,
             (payment_id, order_id, user_id, merchant, amount, currency, idempotency_key),
         )
+        connection.commit()
         return find_payment(payment_id)
 
 
@@ -72,4 +99,25 @@ def update_payment_status(payment_id, status):
             """,
             (status, payment_id),
         )
+        connection.commit()
         return find_payment(payment_id)
+
+
+def find_payment_by_idempotency_key(idempotency_key):
+    with get_connection() as connection:
+        return connection.execute(
+            "SELECT * FROM payments WHERE idempotency_key = ?",
+            (idempotency_key,),
+        ).fetchone()
+
+
+def list_payments_for_user(user_id):
+    with get_connection() as connection:
+        return connection.execute(
+            """
+            SELECT * FROM payments
+            WHERE user_id = ?
+            ORDER BY created_at DESC
+            """,
+            (user_id,),
+        ).fetchall()

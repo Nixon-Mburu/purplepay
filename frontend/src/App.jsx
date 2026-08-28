@@ -6,6 +6,7 @@ import PaymentsPage from './pages/PaymentsPage'
 import WalletPage from './pages/WalletPage'
 import WebhooksPage from './pages/WebhooksPage'
 import { getCurrentUser, logoutUser } from './services/auth'
+import { listOrders } from './services/order/order'
 
 const pages = [
   { path: 'dashboard', label: 'Home' },
@@ -92,6 +93,18 @@ function App() {
       })
   }, [authToken])
 
+  useEffect(() => {
+    if (!user || !authToken) return
+
+    listOrders({ userId: user.id, token: authToken })
+      .then((data) => {
+        if (data.orders.length > 0) {
+          setOrders(data.orders)
+        }
+      })
+      .catch(() => null)
+  }, [authToken, user])
+
   const navigate = (page) => {
     window.location.hash = `#/${page}`
     setCurrentPage(page)
@@ -173,7 +186,14 @@ function App() {
         onSignOut={handleSignOut}
       />
     ),
-    orders: <OrdersPage orders={orders} onCreateOrder={handleCreateOrder} />,
+    orders: (
+      <OrdersPage
+        authToken={authToken}
+        orders={orders}
+        user={user}
+        onCreateOrder={handleCreateOrder}
+      />
+    ),
     payments: <PaymentsPage orders={orders} onPay={handlePay} />,
     wallet: <WalletPage payments={payments} walletBalance={walletBalance} />,
     webhooks: <WebhooksPage activity={activity} payments={payments} />,

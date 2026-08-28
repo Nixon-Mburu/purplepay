@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 from auth import auth_blueprint
 from models import init_db
+from orders import orders_blueprint
 
 
 def create_app():
@@ -11,6 +12,7 @@ def create_app():
     init_db()
 
     app.register_blueprint(auth_blueprint)
+    app.register_blueprint(orders_blueprint)
 
     @app.get("/health")
     def health():

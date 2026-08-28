@@ -1,21 +1,34 @@
 import { useState } from 'react'
+import { createOrder } from '../services/order/order'
 import '../styles/OrdersPage.css'
 
-function OrdersPage({ orders, onCreateOrder }) {
+function OrdersPage({ authToken, orders, user, onCreateOrder }) {
   const [merchant, setMerchant] = useState('Kilimani Coffee')
   const [description, setDescription] = useState('Team breakfast order')
   const [amount, setAmount] = useState('32.50')
+  const [error, setError] = useState('')
+  const [isSaving, setIsSaving] = useState(false)
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
+    setError('')
+    setIsSaving(true)
 
-    onCreateOrder({
-      amount: Number(amount || 0),
-      description,
-      id: `ORD-${Math.floor(Math.random() * 9000) + 1000}`,
-      merchant,
-      status: 'Ready to pay',
-    })
+    try {
+      const data = await createOrder({
+        amount: Number(amount || 0),
+        description,
+        merchant,
+        token: authToken,
+        userId: user?.id,
+      })
+
+      onCreateOrder(data.order)
+    } catch (requestError) {
+      setError(requestError.message)
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   return (
@@ -54,8 +67,12 @@ function OrdersPage({ orders, onCreateOrder }) {
             value={amount}
           />
         </label>
-        <button type="submit">Save Order</button>
+        <button disabled={isSaving} type="submit">
+          {isSaving ? 'Saving...' : 'Save Order'}
+        </button>
       </form>
+
+      {error && <p className="order-error">{error}</p>}
 
       <div className="orders-list">
         {orders.map((order) => (
