@@ -35,7 +35,7 @@ function App() {
   return (
     <main className="page">
       <header>
-        <a href="http://localhost:3000">PurplePay</a>
+        <a href="/">PurplePay</a>
         <span>Pay</span>
       </header>
       <section className="hero">

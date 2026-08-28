@@ -41,7 +41,7 @@ function App() {
   return (
     <main className="app-page auth-page">
       <nav className="topbar">
-        <a href="http://localhost:3000">PurplePay</a>
+        <a href="/">PurplePay</a>
         <span>Account</span>
       </nav>
 

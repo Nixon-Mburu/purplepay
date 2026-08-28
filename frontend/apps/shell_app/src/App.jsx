@@ -1,27 +1,27 @@
 const apps = [
   {
     name: 'Account',
-    url: 'http://localhost:3001',
+    url: '/auth/',
     description: 'Sign in, create an account, and manage your session.',
   },
   {
     name: 'Orders',
-    url: 'http://localhost:3002',
+    url: '/orders/',
     description: 'Create payment requests before checkout.',
   },
   {
     name: 'Pay',
-    url: 'http://localhost:3003',
+    url: '/pay/',
     description: 'Choose an order and complete payment.',
   },
   {
     name: 'Wallet',
-    url: 'http://localhost:3004',
+    url: '/wallet/',
     description: 'Track balance and payment history.',
   },
   {
     name: 'Activity',
-    url: 'http://localhost:3005',
+    url: '/activity/',
     description: 'Review confirmations and recent updates.',
   },
 ]
@@ -33,7 +33,7 @@ function App() {
         <a className="brand" href="/">
           PurplePay
         </a>
-        <a className="topbar-action" href="http://localhost:3001">
+        <a className="topbar-action" href="/auth/">
           Sign in
         </a>
       </nav>
@@ -47,10 +47,10 @@ function App() {
             merchants, and follow every confirmation.
           </p>
           <div className="hero-actions">
-            <a className="primary-link" href="http://localhost:3003">
+            <a className="primary-link" href="/pay/">
               Make a Payment
             </a>
-            <a className="secondary-link" href="http://localhost:3002">
+            <a className="secondary-link" href="/orders/">
               Create Order
             </a>
           </div>

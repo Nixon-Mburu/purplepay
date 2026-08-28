@@ -2,7 +2,7 @@ import { StrictMode, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './style.css'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 function App() {
   const [events, setEvents] = useState([])
@@ -18,7 +18,7 @@ function App() {
   return (
     <main className="page">
       <header>
-        <a href="http://localhost:3000">PurplePay</a>
+        <a href="/">PurplePay</a>
         <span>Activity</span>
       </header>
       <section className="hero">
