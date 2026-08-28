@@ -1,0 +1,21 @@
+.gitrepo/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+
+# Backend
+backend/pay/
+backend/**/*.db
+backend/**/*.db-journal
+backend/**/__pycache__/
+backend/**/*.pyc
+
+# Logs and OS/editor files
+*.log
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
