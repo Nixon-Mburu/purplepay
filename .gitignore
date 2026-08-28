@@ -1,10 +1,10 @@
 .gitrepo/
 
-# Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/dist-ssr/
-frontend/*.local
+# Frontend apps
+frontend/apps/*/node_modules/
+frontend/apps/*/dist/
+frontend/apps/*/dist-ssr/
+frontend/apps/*/*.local
 
 # Backend
 backend/pay/

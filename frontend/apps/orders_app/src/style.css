@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Gabarito:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --beige: #efe4cf;
+  --surface: #fff9ef;
+  --white: #ffffff;
+  --ink: #201923;
+  --text: #554a41;
+  --muted: #817468;
+  --border: #dcc8ac;
+  --purple: #7c3aed;
+  font-family: 'Gabarito', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--beige); color: var(--text); margin: 0; }
+.page { margin: 0 auto; max-width: 1120px; min-height: 100vh; padding: 24px; }
+header { align-items: center; background: rgba(255,249,239,.8); border: 1px solid var(--border); border-radius: 8px; display: flex; justify-content: space-between; padding: 10px 12px; }
+header a, header span { color: var(--purple); font-weight: 800; text-decoration: none; }
+.hero { padding: 64px 0 28px; }
+h1 { color: var(--ink); font-size: clamp(42px, 7vw, 76px); line-height: .95; margin: 0 0 18px; max-width: 760px; }
+p { color: var(--muted); margin: 0; }
+.order-form { align-items: end; background: var(--white); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 20px 60px rgba(68,54,34,.1); display: grid; gap: 12px; grid-template-columns: 1fr 1fr 150px auto; padding: 16px; }
+label { color: var(--ink); display: grid; font-weight: 800; gap: 7px; }
+input, button { border-radius: 8px; font: inherit; min-height: 44px; padding: 10px 12px; }
+input { border: 1px solid var(--border); }
+button { background: var(--purple); border: 1px solid var(--purple); color: white; cursor: pointer; font-weight: 800; }
+.error { background: #fff0f0; border: 1px solid #f0b3b3; border-radius: 8px; color: #9f2727; margin-top: 14px; padding: 10px 12px; }
+.list { display: grid; gap: 12px; margin-top: 18px; }
+article { align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; display: grid; gap: 14px; grid-template-columns: minmax(220px, 1fr) 140px 120px 130px; padding: 18px; }
+strong { color: var(--ink); }
+em { color: var(--muted); font-style: normal; }
+@media (max-width: 840px) { .order-form, article { grid-template-columns: 1fr; } }

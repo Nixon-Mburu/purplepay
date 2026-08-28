@@ -1,0 +1,154 @@
+services:
+  shell_app:
+    build:
+      context: ./frontend/apps/shell_app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api_gateway
+
+  auth_app:
+    build:
+      context: ./frontend/apps/auth_app
+      args:
+        VITE_API_BASE_URL: http://localhost:5000
+    ports:
+      - "3001:3001"
+    depends_on:
+      - api_gateway
+
+  orders_app:
+    build:
+      context: ./frontend/apps/orders_app
+      args:
+        VITE_API_BASE_URL: http://localhost:5000
+    ports:
+      - "3002:3002"
+    depends_on:
+      - api_gateway
+
+  payments_app:
+    build:
+      context: ./frontend/apps/payments_app
+      args:
+        VITE_API_BASE_URL: http://localhost:5000
+    ports:
+      - "3003:3003"
+    depends_on:
+      - api_gateway
+
+  wallet_app:
+    build:
+      context: ./frontend/apps/wallet_app
+      args:
+        VITE_API_BASE_URL: http://localhost:5000
+    ports:
+      - "3004:3004"
+    depends_on:
+      - api_gateway
+
+  activity_app:
+    build:
+      context: ./frontend/apps/activity_app
+      args:
+        VITE_API_BASE_URL: http://localhost:5000
+    ports:
+      - "3005:3005"
+    depends_on:
+      - api_gateway
+
+  api_gateway:
+    build:
+      context: ./backend/services/api_gateway
+    ports:
+      - "5000:5000"
+    environment:
+      ADMIN_SERVICE_URL: http://admin_service:5006
+      AUTH_SERVICE_URL: http://auth_service:5001
+      ORDERS_SERVICE_URL: http://orders_service:5002
+      PAYMENTS_SERVICE_URL: http://payments_module:5004
+      WALLET_SERVICE_URL: http://wallet_service:5003
+      WEBHOOK_SERVICE_URL: http://webhook_service:5005
+    depends_on:
+      - admin_service
+      - auth_service
+      - orders_service
+      - payments_module
+      - wallet_service
+      - webhook_service
+    volumes:
+      - api_gateway_data:/app/data
+
+  auth_service:
+    build:
+      context: ./backend/services/auth_service
+    ports:
+      - "5001:5001"
+    environment:
+      DATABASE_PATH: /app/data/auth.db
+    volumes:
+      - auth_data:/app/data
+
+  orders_service:
+    build:
+      context: ./backend/services/orders_service
+    ports:
+      - "5002:5002"
+    environment:
+      DATABASE_PATH: /app/data/orders.db
+    volumes:
+      - orders_data:/app/data
+
+  wallet_service:
+    build:
+      context: ./backend/services/wallet_service
+    ports:
+      - "5003:5003"
+    environment:
+      DATABASE_PATH: /app/data/wallet.db
+    volumes:
+      - wallet_data:/app/data
+
+  payments_module:
+    build:
+      context: ./backend/services/payments_module
+    ports:
+      - "5004:5004"
+    environment:
+      DATABASE_PATH: /app/data/payments.db
+      WALLET_SERVICE_URL: http://wallet_service:5003
+      WEBHOOK_SERVICE_URL: http://webhook_service:5005
+    depends_on:
+      - wallet_service
+      - webhook_service
+    volumes:
+      - payments_data:/app/data
+
+  webhook_service:
+    build:
+      context: ./backend/services/webhook_service
+    ports:
+      - "5005:5005"
+    environment:
+      DATABASE_PATH: /app/data/webhooks.db
+    volumes:
+      - webhook_data:/app/data
+
+  admin_service:
+    build:
+      context: ./backend/services/admin_service
+    ports:
+      - "5006:5006"
+    environment:
+      DATABASE_PATH: /app/data/admin.db
+    volumes:
+      - admin_data:/app/data
+
+volumes:
+  admin_data:
+  api_gateway_data:
+  auth_data:
+  orders_data:
+  payments_data:
+  wallet_data:
+  webhook_data:
