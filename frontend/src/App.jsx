@@ -5,6 +5,7 @@ import OrdersPage from './pages/OrdersPage'
 import PaymentsPage from './pages/PaymentsPage'
 import WalletPage from './pages/WalletPage'
 import WebhooksPage from './pages/WebhooksPage'
+import { getCurrentUser, logoutUser } from './services/auth'
 
 const pages = [
   { path: 'dashboard', label: 'Home' },
@@ -62,6 +63,9 @@ const initialActivity = [
 function App() {
   const [currentPage, setCurrentPage] = useState(getCurrentPage)
   const [user, setUser] = useState(null)
+  const [authToken, setAuthToken] = useState(() =>
+    localStorage.getItem('purplepay_token'),
+  )
   const [orders, setOrders] = useState(initialOrders)
   const [payments, setPayments] = useState(initialPayments)
   const [activity, setActivity] = useState(initialActivity)
@@ -76,6 +80,17 @@ function App() {
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
+
+  useEffect(() => {
+    if (!authToken) return
+
+    getCurrentUser(authToken)
+      .then((data) => setUser(data.user))
+      .catch(() => {
+        localStorage.removeItem('purplepay_token')
+        setAuthToken(null)
+      })
+  }, [authToken])
 
   const navigate = (page) => {
     window.location.hash = `#/${page}`
@@ -93,13 +108,21 @@ function App() {
     ])
   }
 
-  const handleSignIn = (profile) => {
+  const handleAuthSuccess = ({ token, user: profile }) => {
+    localStorage.setItem('purplepay_token', token)
+    setAuthToken(token)
     setUser(profile)
     addActivity('Welcome back', `${profile.name} signed in successfully.`)
     navigate('dashboard')
   }
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    if (authToken) {
+      await logoutUser(authToken).catch(() => null)
+    }
+
+    localStorage.removeItem('purplepay_token')
+    setAuthToken(null)
     setUser(null)
     addActivity('Signed out', 'The current account session ended.')
     navigate('auth')
@@ -142,7 +165,14 @@ function App() {
         onNavigate={navigate}
       />
     ),
-    auth: <AuthPage user={user} onSignIn={handleSignIn} onSignOut={handleSignOut} />,
+    auth: (
+      <AuthPage
+        user={user}
+        authToken={authToken}
+        onAuthSuccess={handleAuthSuccess}
+        onSignOut={handleSignOut}
+      />
+    ),
     orders: <OrdersPage orders={orders} onCreateOrder={handleCreateOrder} />,
     payments: <PaymentsPage orders={orders} onPay={handlePay} />,
     wallet: <WalletPage payments={payments} walletBalance={walletBalance} />,

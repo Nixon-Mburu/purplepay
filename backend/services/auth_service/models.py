@@ -36,6 +36,18 @@ def init_db():
         )
 
 
+def user_to_dict(user):
+    if user is None:
+        return None
+
+    return {
+        "id": user["id"],
+        "name": user["name"],
+        "email": user["email"],
+        "created_at": user["created_at"],
+    }
+
+
 def create_user(name, email, password_hash):
     with get_connection() as connection:
         cursor = connection.execute(
@@ -54,3 +66,46 @@ def find_user_by_email(email):
             "SELECT * FROM users WHERE email = ?",
             (email,),
         ).fetchone()
+
+
+def find_user_by_id(user_id):
+    with get_connection() as connection:
+        return connection.execute(
+            "SELECT * FROM users WHERE id = ?",
+            (user_id,),
+        ).fetchone()
+
+
+def create_session(user_id, token, expires_at):
+    with get_connection() as connection:
+        connection.execute(
+            """
+            INSERT INTO sessions (user_id, token, expires_at)
+            VALUES (?, ?, ?)
+            """,
+            (user_id, token, expires_at),
+        )
+        return find_session_by_token(token)
+
+
+def find_session_by_token(token):
+    with get_connection() as connection:
+        return connection.execute(
+            """
+            SELECT sessions.*, users.name, users.email
+            FROM sessions
+            JOIN users ON users.id = sessions.user_id
+            WHERE sessions.token = ?
+              AND sessions.expires_at > CURRENT_TIMESTAMP
+            """,
+            (token,),
+        ).fetchone()
+
+
+def delete_session(token):
+    with get_connection() as connection:
+        cursor = connection.execute(
+            "DELETE FROM sessions WHERE token = ?",
+            (token,),
+        )
+        return cursor.rowcount

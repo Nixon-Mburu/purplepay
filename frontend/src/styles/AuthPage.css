@@ -28,10 +28,39 @@
   padding: 28px;
 }
 
+.auth-mode-switch {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 8px;
+}
+
+.auth-mode-switch button {
+  min-height: 40px;
+  width: 100%;
+}
+
+.auth-mode-switch .active {
+  background: var(--purple);
+  color: white;
+}
+
 .button-row {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.auth-error {
+  background: #fff0f0;
+  border: 1px solid #f0b3b3;
+  border-radius: 8px;
+  color: #9f2727;
+  font-weight: 700;
+  padding: 10px 12px;
 }
 
 .auth-session {
@@ -52,6 +81,12 @@
 .auth-session strong {
   font-size: 32px;
   line-height: 1;
+}
+
+.auth-form input:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.68;
 }
 
 @media (max-width: 820px) {
