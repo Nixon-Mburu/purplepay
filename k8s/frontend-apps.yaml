@@ -1,0 +1,203 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shell-app
+  namespace: purplepay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shell-app
+  template:
+    metadata:
+      labels:
+        app: shell-app
+    spec:
+      containers:
+        - name: shell-app
+          image: purplepay/shell-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shell-app
+  namespace: purplepay
+spec:
+  selector:
+    app: shell-app
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-app
+  namespace: purplepay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-app
+  template:
+    metadata:
+      labels:
+        app: auth-app
+    spec:
+      containers:
+        - name: auth-app
+          image: purplepay/auth-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-app
+  namespace: purplepay
+spec:
+  selector:
+    app: auth-app
+  ports:
+    - port: 3001
+      targetPort: 3001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-app
+  namespace: purplepay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-app
+  template:
+    metadata:
+      labels:
+        app: orders-app
+    spec:
+      containers:
+        - name: orders-app
+          image: purplepay/orders-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-app
+  namespace: purplepay
+spec:
+  selector:
+    app: orders-app
+  ports:
+    - port: 3002
+      targetPort: 3002
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payments-app
+  namespace: purplepay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payments-app
+  template:
+    metadata:
+      labels:
+        app: payments-app
+    spec:
+      containers:
+        - name: payments-app
+          image: purplepay/payments-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3003
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payments-app
+  namespace: purplepay
+spec:
+  selector:
+    app: payments-app
+  ports:
+    - port: 3003
+      targetPort: 3003
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wallet-app
+  namespace: purplepay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wallet-app
+  template:
+    metadata:
+      labels:
+        app: wallet-app
+    spec:
+      containers:
+        - name: wallet-app
+          image: purplepay/wallet-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3004
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wallet-app
+  namespace: purplepay
+spec:
+  selector:
+    app: wallet-app
+  ports:
+    - port: 3004
+      targetPort: 3004
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: activity-app
+  namespace: purplepay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: activity-app
+  template:
+    metadata:
+      labels:
+        app: activity-app
+    spec:
+      containers:
+        - name: activity-app
+          image: purplepay/activity-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3005
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: activity-app
+  namespace: purplepay
+spec:
+  selector:
+    app: activity-app
+  ports:
+    - port: 3005
+      targetPort: 3005

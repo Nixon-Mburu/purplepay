@@ -14,5 +14,6 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: 3002,
+    allowedHosts: ['localhost', 'orders_app', 'orders-app', 'frontend_gateway', 'frontend-gateway'],
   },
 })

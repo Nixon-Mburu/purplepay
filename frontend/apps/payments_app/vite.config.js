@@ -14,5 +14,6 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: 3003,
+    allowedHosts: ['localhost', 'payments_app', 'payments-app', 'frontend_gateway', 'frontend-gateway'],
   },
 })

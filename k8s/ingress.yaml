@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: purplepay
+  namespace: purplepay
+spec:
+  rules:
+    - host: purplepay.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-gateway
+                port:
+                  number: 80

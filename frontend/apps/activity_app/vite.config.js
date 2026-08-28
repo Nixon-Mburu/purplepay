@@ -14,5 +14,6 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: 3005,
+    allowedHosts: ['localhost', 'activity_app', 'activity-app', 'frontend_gateway', 'frontend-gateway'],
   },
 })

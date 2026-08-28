@@ -15,4 +15,9 @@ export default defineConfig({
       '/activity': 'http://localhost:3005',
     },
   },
+  preview: {
+    host: '0.0.0.0',
+    port: 3000,
+    allowedHosts: ['localhost', 'shell_app', 'shell-app', 'frontend_gateway', 'frontend-gateway'],
+  },
 })

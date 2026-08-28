@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-service-urls
+  namespace: purplepay
+data:
+  ADMIN_SERVICE_URL: http://admin-service:5006
+  AUTH_SERVICE_URL: http://auth-service:5001
+  ORDERS_SERVICE_URL: http://orders-service:5002
+  PAYMENTS_SERVICE_URL: http://payments-module:5004
+  WALLET_SERVICE_URL: http://wallet-service:5003
+  WEBHOOK_SERVICE_URL: http://webhook-service:5005

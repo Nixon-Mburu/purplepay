@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-gateway-config
+  namespace: purplepay
+data:
+  default.conf: |
+    server {
+      listen 80;
+      server_name _;
+
+      proxy_set_header Host $host;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Host $host;
+      proxy_set_header X-Forwarded-Proto $scheme;
+
+      location = /auth {
+        return 308 /auth/;
+      }
+
+      location = /orders {
+        return 308 /orders/;
+      }
+
+      location = /pay {
+        return 308 /pay/;
+      }
+
+      location = /wallet {
+        return 308 /wallet/;
+      }
+
+      location = /activity {
+        return 308 /activity/;
+      }
+
+      location /auth/ {
+        proxy_pass http://auth-app:3001/auth/;
+      }
+
+      location /orders/ {
+        proxy_pass http://orders-app:3002/orders/;
+      }
+
+      location /pay/ {
+        proxy_pass http://payments-app:3003/pay/;
+      }
+
+      location /wallet/ {
+        proxy_pass http://wallet-app:3004/wallet/;
+      }
+
+      location /activity/ {
+        proxy_pass http://activity-app:3005/activity/;
+      }
+
+      location /api/ {
+        proxy_pass http://api-gateway:5000/api/;
+      }
+
+      location / {
+        proxy_pass http://shell-app:3000/;
+      }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-gateway
+  namespace: purplepay
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend-gateway
+  template:
+    metadata:
+      labels:
+        app: frontend-gateway
+    spec:
+      containers:
+        - name: frontend-gateway
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: frontend-gateway-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+      volumes:
+        - name: frontend-gateway-config
+          configMap:
+            name: frontend-gateway-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-gateway
+  namespace: purplepay
+spec:
+  selector:
+    app: frontend-gateway
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80

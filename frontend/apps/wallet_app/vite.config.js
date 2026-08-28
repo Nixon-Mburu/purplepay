@@ -14,5 +14,6 @@ export default defineConfig({
   preview: {
     host: '0.0.0.0',
     port: 3004,
+    allowedHosts: ['localhost', 'wallet_app', 'wallet-app', 'frontend_gateway', 'frontend-gateway'],
   },
 })
